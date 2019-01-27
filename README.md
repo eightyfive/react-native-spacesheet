@@ -2,6 +2,8 @@
 
 Consistent margin/padding React Native styles.
 
+<img src="spaceship.jpg" />
+
 ## Installation
 
 ```
@@ -278,7 +280,7 @@ space.style.col8
 // ...
 ```
 
-`(row|col)` gives the main axis direction, while the following `/[1-9]/` number specifies the [dial number](https://github.com/eightyfive/react-native-col) to align/justify the children against.
+`(row|col)` gives the main axis direction, while the following `[1-9]` number specifies the [dial number](https://github.com/eightyfive/react-native-col) to align/justify the children against.
 
 See more information about the "dial" shorthand syntax in the [react-native-col](https://github.com/eightyfive/react-native-col) project documentation.
 

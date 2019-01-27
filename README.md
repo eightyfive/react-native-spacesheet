@@ -55,7 +55,7 @@ export function Foo() {
 
 ## `Proxy` polyfill
 
-Since React Native does not support [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), you'll need to install [`proxy-polyfill`](https://github.com/GoogleChrome/proxy-polyfill).
+React Native does not support the [Proxy] Object(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), so you'll need to install [`proxy-polyfill`](https://github.com/GoogleChrome/proxy-polyfill).
 
 ## Sizes "à la Bootstrap v4"
 
@@ -66,8 +66,8 @@ Meaning that you don't pass the actual size value to your styles, but its index 
 ```js
 const space = new SpaceSheet();
 
-   space.setSizes([0, 5, 10, 20, 40]);
-//                [0, 1,  2,  3, 4] // Corresponding indexes...
+space.setSizes([0, 5, 10, 20, 40]);
+//             [0, 1,  2,  3, 4] // Corresponding indexes...
 
 space.getStyle({
   marginTop: 3, // --> size = 20
@@ -166,13 +166,13 @@ import { sheet } from 'src/styles/space';
 The `style` property is exposed as a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), meaning aliased plain style will be created (and cached) on-demand.
 
 ```js
-import { style } from 'src/styles/space';
+import space from 'src/styles/space';
 
 <View style={styles.container} />;
 
 const styles = StyleSheet.create({
   container: {
-    ...style.p3,
+    ...space.style.p3,
     flex: 3,
     flexDirection: 'column-reverse',
     // ...
@@ -267,6 +267,21 @@ StyleSheet.create({
   })
 });
 ```
+
+## Col / Row – Dial (Bonus)
+
+You can also specify quick flexbox styles thanks to the magic "dial" properties:
+
+```js
+space.(style|sheet).row5
+space.(style|sheet).col8
+// ...
+```
+
+`(row|col)` gives the main axis direction, while the following `/[1-9]/` number specifies the [dial number](https://github.com/eightyfive/react-native-col) to align/justify the children against.
+
+See more information about the "dial" shorthand syntax in the [react-native-col](https://github.com/eightyfive/react-native-col) project documentation.
+
 
 ## Credits
 

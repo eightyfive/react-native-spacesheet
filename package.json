@@ -1,6 +1,6 @@
 {
   "name": "react-native-spacesheet",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "\"À la Bootstrap\" quick margin/padding styles",
   "main": "index.js",
   "scripts": {
@@ -28,7 +28,8 @@
   "dependencies": {
     "lodash.get": "^4.4.2",
     "lodash.mapkeys": "^4.6.0",
-    "lodash.zipobject": "^4.1.3"
+    "lodash.zipobject": "^4.1.3",
+    "react-native-col": "^0.1.3"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",

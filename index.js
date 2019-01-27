@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { dialRow, dialCol } from 'react-native-col/dial';
 import _mapKeys from 'lodash.mapkeys';
 import _get from 'lodash.get';
 //
@@ -8,6 +9,7 @@ const spaces = Object.values(defaultStrategy.aliases);
 
 const isSpace = new RegExp(`^(${spaces.join('|')})$`);
 const isSpaceArray = /^(margin|padding)$/;
+const isDial = /^(row|col)([1-9])$/;
 const splitProp = /^([a-zA-Z]+)(\d+)$/;
 
 export default class SpaceSheet {
@@ -74,7 +76,22 @@ export default class SpaceSheet {
 
     if (style) return style;
 
-    const result = splitProp.exec(prop);
+    let result;
+
+    result = isDial.exec(prop);
+
+    // Is dial?
+    if (result) {
+      const [, dialType, dial] = result;
+
+      if (dialType === 'col') {
+        return dialCol(dial);
+      }
+
+      return dialRow(dial);
+    }
+
+    result = splitProp.exec(prop);
 
     if (!result) return; // undefined
 

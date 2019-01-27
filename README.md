@@ -86,6 +86,14 @@ You can pass an `array` of sizes to `margin` & `padding` style properties only. 
 ```js
 // sizes = [0, 5, 10, 20, 40]
 
+{ ...space.style.m202 }
+
+style={space.sheet.p2002}
+
+{ ...space.style.ph12 } // Ignored
+
+// - OR -
+
 space.getStyle({
   margin: [2, 0, 2], // --> Top = 10, Horizontal = 0, Bottom = 10
   padding: [2, 0, 0, 2], // --> Top = 10, Right = 0, Bottom = 0, Left = 10

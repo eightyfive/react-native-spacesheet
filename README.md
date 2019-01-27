@@ -273,8 +273,8 @@ StyleSheet.create({
 You can also specify quick flexbox styles thanks to the magic "dial" properties:
 
 ```js
-space.(style|sheet).row5
-space.(style|sheet).col8
+space.sheet.row5
+space.style.col8
 // ...
 ```
 

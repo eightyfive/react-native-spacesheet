@@ -2,8 +2,11 @@ import { StyleSheet } from 'react-native';
 import { dialRow, dialCol } from 'react-native-col/dial';
 import _mapKeys from 'lodash.mapkeys';
 import _get from 'lodash.get';
+import createProxyPolyfill from 'proxy-polyfill/src/proxy';
 //
 import defaultStrategy from './strategy';
+
+const Proxy = createProxyPolyfill();
 
 const spaces = Object.values(defaultStrategy.aliases);
 
@@ -15,42 +18,93 @@ const splitProp = /^([a-zA-Z]+)(\d+)$/;
 export default class SpaceSheet {
   sizes = [];
   strategy = {};
+  shorthands = [];
 
-  _style = null;
-  _sheet = null;
+  styleProxy = null;
+  sheetProxy = null;
 
   constructor(strategy = defaultStrategy) {
     this.strategy = strategy;
   }
 
   get style() {
-    if (!this._style) {
-      this._style = new Proxy({}, { get: this._getStyle });
+    if (!this.styleProxy) {
+      this.styleProxy = new Proxy(this.createCache(), { get: this._getStyle });
     }
 
-    return this._style;
+    return this.styleProxy;
   }
 
   get sheet() {
-    if (!this._sheet) {
-      this._sheet = new Proxy({}, { get: this._getSheet });
+    if (!this.sheetProxy) {
+      this.sheetProxy = new Proxy(this.createCache(), { get: this._getSheet });
     }
 
-    return this._sheet;
+    return this.sheetProxy;
+  }
+
+  /**
+   * Limitation of Proxy polyfill (https://github.com/GoogleChrome/proxy-polyfill)
+   *
+   * "This means that the properties you want to proxy *must be known at creation time*."
+   *
+   * Hence we need this method to generate all possible Proxy keys:
+   * mb1, pv2, m202, p1030, etc...
+   */
+  createCache() {
+    const shorthands = this.getSizeShorthands();
+    const cache = {};
+
+    Object.keys(this.strategy.aliases).forEach(alias => {
+      shorthands.forEach(shorthand => {
+        cache[`${alias}${shorthand}`] = false;
+      });
+    });
+
+    for (let dial = 1; dial < 10; dial++) {
+      cache[`row${dial}`] = false;
+      cache[`col${dial}`] = false;
+    }
+
+    return cache;
+  }
+
+  /**
+   * Generates all possible shorthands combinations:
+   * 0001, 0002, ..., 0025, 0030, ..., 0455, 0500, ..., 5554, 5555.
+   */
+  getSizeShorthands() {
+    if (!this.shorthands.length) {
+      const total = Math.pow(this.sizes.length, 4);
+
+      let count = 0;
+
+      for (let i = 0; i < total; i++) {
+        this.shorthands.push(count.toString(this.sizes.length));
+        count++;
+      }
+    }
+
+    return this.shorthands;
   }
 
   setSizes(sizes) {
+    this.shorthands = [];
+    this.styleProxy = null;
+    this.sheetProxy = null;
     this.sizes = sizes;
   }
 
   setSpacing(amount, range = 5) {
-    this.sizes = [];
+    const sizes = [];
 
     for (let index = 1; index <= range; index++) {
-      this.sizes.push(this.strategy.nextSize(amount, index, range));
+      sizes.push(this.strategy.nextSize(amount, index, range));
     }
 
-    this.sizes.unshift(0);
+    sizes.unshift(0);
+
+    this.setSizes(sizes);
   }
 
   getStyle({ ...style }) {

@@ -2,6 +2,7 @@ import { StyleSheet } from 'react-native';
 import { dialRow, dialCol } from 'react-native-col/dial';
 import _mapKeys from 'lodash.mapkeys';
 import _get from 'lodash.get';
+import _padStart from 'lodash.padstart';
 import createProxyPolyfill from 'proxy-polyfill/src/proxy';
 //
 import defaultStrategy from './strategy';
@@ -80,7 +81,9 @@ export default class SpaceSheet {
       let count = 0;
 
       for (let i = 0; i < total; i++) {
-        this.shorthands.push(count.toString(this.sizes.length));
+        this.shorthands.push(
+          _padStart(count.toString(this.sizes.length), 4, '0')
+        );
         count++;
       }
     }

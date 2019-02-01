@@ -1,6 +1,6 @@
 {
   "name": "react-native-spacesheet",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "\"À la Bootstrap\" quick margin/padding styles",
   "main": "index.js",
   "scripts": {

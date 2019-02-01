@@ -57,7 +57,18 @@ export function Foo() {
 
 ## `Proxy` polyfill
 
-React Native does not support the [Proxy] Object(https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), so you'll need to install [`proxy-polyfill`](https://github.com/GoogleChrome/proxy-polyfill).
+React Native does not support [`Proxy`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy) object.
+
+Since [`proxy-polyfill`](https://github.com/GoogleChrome/proxy-polyfill) does not support the creation of new properties on `target` proxied object, we need to generate all possible `target` keys before creating the (polyfilled) `Proxy`.
+
+This is not ideal but that's a good enough workaround until React Native supports `Proxy`.
+
+_Note_: This package forces the use of `proxy-polyfill` for consistency accross different environments (simulator, device, remote debugging, iOS, Android, etc...).
+
+### Why keeping the `Proxy` implementation then?
+
+1. Minimum code to remove when RN will support `Proxy`
+2. Only keys are generated, not the actual styles computation (still proxied/on-the-fly)
 
 ## Sizes "à la Bootstrap v4"
 
@@ -111,11 +122,11 @@ Here is the [default strategy](https://github.com/eightyfive/react-native-spaces
 ```js
 export default {
   aliases: {
-    m: "margin",
-    mt: "marginTop",
+    m: 'margin',
+    mt: 'marginTop',
     // ...
-    p: "padding",
-    pt: "paddingTop",
+    p: 'padding',
+    pt: 'paddingTop',
     // ...
   },
 
@@ -186,8 +197,8 @@ const styles = StyleSheet.create({
     flex: 3,
     flexDirection: 'column-reverse',
     // ...
-  }
-})
+  },
+});
 ```
 
 ### `setSizes(array sizes)`
@@ -230,7 +241,7 @@ _Note_: `setSpacing` always prepend the value `0` to the result. If you do not w
 
 ```js
 // "Double" strategy (default)
-strategy.nextSize = (amount, index) => amount * Math.pow(2, index-1);
+strategy.nextSize = (amount, index) => amount * Math.pow(2, index - 1);
 space.setSpacing(4, 8);
 // -> [0, 4, 8, 16, 32, 64, 128, 256, 512]
 
@@ -274,7 +285,7 @@ StyleSheet.create({
     flex: 3,
     flexDirection: 'row',
     // ...
-  })
+  }),
 });
 ```
 
@@ -283,15 +294,14 @@ StyleSheet.create({
 You can also specify quick flexbox styles thanks to the magic "dial" properties:
 
 ```js
-space.sheet.row5
-space.style.col8
+space.sheet.row5;
+space.style.col8;
 // ...
 ```
 
 `(row|col)` gives the main axis direction, while the following `[1-9]` number specifies the [dial number](https://github.com/eightyfive/react-native-col) to align/justify the children against.
 
 See more information about the "dial" shorthand syntax in the [react-native-col](https://github.com/eightyfive/react-native-col) project documentation.
-
 
 ## Credits
 

@@ -81,9 +81,10 @@ export default class SpaceSheet {
       let count = 0;
 
       for (let i = 0; i < total; i++) {
-        this.shorthands.push(
-          _padStart(count.toString(this.sizes.length), 4, '0')
-        );
+        const rebased = count.toString(this.sizes.length);
+
+        this.shorthands.push(rebased, _padStart(rebased, 4, '0'));
+
         count++;
       }
     }

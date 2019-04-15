@@ -1,6 +1,6 @@
 {
   "name": "react-native-spacesheet",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Consistent margin/padding React Native styles",
   "main": "index.js",
   "scripts": {

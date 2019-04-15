@@ -185,7 +185,7 @@ export default class SpaceSheet {
     let sheet = cache[prop];
 
     if (!sheet) {
-      const style = this.style[prop];
+      const style = this.styles[prop];
 
       if (!style) return; // undefined
 

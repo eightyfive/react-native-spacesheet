@@ -1,7 +1,7 @@
 {
   "name": "react-native-spacesheet",
-  "version": "0.1.4",
-  "description": "\"À la Bootstrap\" quick margin/padding styles",
+  "version": "0.2.0",
+  "description": "Consistent margin/padding React Native styles",
   "main": "index.js",
   "scripts": {
     "test": "jest"

@@ -6,18 +6,19 @@ export function dialRow(dial) {
   return getStyle('row', dial);
 }
 
-function getStyle(dir, dial) {
+function getStyle(flexDirection, dial) {
   if (dial < 1 || dial > 9) {
     throw new TypeError('`dial` prop must be between 1 and 9');
   }
 
   // Main-axis
-  const justifyContent = dir === 'row' ? dialX(dial) : dialY(dial);
+  const justifyContent = flexDirection === 'row' ? dialX(dial) : dialY(dial);
 
   // Cross-axis
-  const alignItems = dir === 'row' ? dialY(dial) : dialX(dial);
+  const alignItems = flexDirection === 'row' ? dialY(dial) : dialX(dial);
 
   return {
+    flexDirection,
     justifyContent,
     alignItems,
   };

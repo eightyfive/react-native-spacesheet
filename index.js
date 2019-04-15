@@ -24,8 +24,19 @@ export default class SpaceSheet {
   styleProxy = null;
   sheetProxy = null;
 
-  constructor(strategy = defaultStrategy) {
-    this.strategy = strategy;
+  constructor(strategy) {
+    let spacing;
+
+    if (typeof strategy === 'number') {
+      spacing = strategy;
+      strategy = null;
+    }
+
+    this.strategy = strategy || defaultStrategy;
+
+    if (spacing) {
+      this.setSpacing(spacing);
+    }
   }
 
   get styles() {

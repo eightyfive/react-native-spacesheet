@@ -28,7 +28,7 @@ export default class SpaceSheet {
     this.strategy = strategy;
   }
 
-  get style() {
+  get styles() {
     if (!this.styleProxy) {
       this.styleProxy = new Proxy(this.createCache(), { get: this._getStyle });
     }
@@ -36,7 +36,7 @@ export default class SpaceSheet {
     return this.styleProxy;
   }
 
-  get sheet() {
+  get sheets() {
     if (!this.sheetProxy) {
       this.sheetProxy = new Proxy(this.createCache(), { get: this._getSheet });
     }

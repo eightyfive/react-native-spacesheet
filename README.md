@@ -19,9 +19,9 @@ const space = new SpaceSheet();
 
 space.setSizes([0, 5, 10, 20, 40]);
 
-space.sheet.mb0; // --> RN style = { marginBottom: 0 }
-space.sheet.pv2; // --> RN style = { paddingVertical: 10 }
-space.sheet.p34; // --> RN style = { paddingVertical: 20, paddingHorizontal: 40 }
+space.sheets.mb0; // --> RN style = { marginBottom: 0 }
+space.sheets.pv2; // --> RN style = { paddingVertical: 10 }
+space.sheets.p34; // --> RN style = { paddingVertical: 20, paddingHorizontal: 40 }
 // ...
 ```
 
@@ -35,24 +35,31 @@ const space = new SpaceSheet();
 
 space.setSpacing(5);
 
-export const sheet = space.sheet;
+export const s = space.styles;
+export const ss = space.sheets;
 
 export default space;
 ```
 
 ```js
 // src/components/foo.js
-// "u" is an arbitrary alias
-import { sheet as u } from 'src/styles/space';
+import { s, ss } from 'src/styles/space';
 
 // "A box with padding = 10, containing another box with margin horizontal = 40"
 export function Foo() {
   return (
-    <View style={u.p2}>
-      <View style={u.mh4} />
+    <View style={ss.p2}>
+      <View style={styles.container} />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    ...s.row8,
+    ...s.mh4,
+  },
+});
 ```
 
 ## `Proxy` polyfill
@@ -97,11 +104,11 @@ You can pass an `array` of sizes to `margin` & `padding` style properties only. 
 ```js
 // sizes = [0, 5, 10, 20, 40]
 
-{ ...space.style.m202 }
+{ ...space.styles.m202 }
 
-style={space.sheet.p2002}
+style={space.sheets.p2002}
 
-{ ...space.style.ph12 } // Ignored
+{ ...space.styles.ph12 } // Ignored
 
 // - OR -
 
@@ -172,28 +179,24 @@ This method is used to calculate the next size, when using [`SpaceSheet.setSpaci
 
 ## API
 
-### `sheet` (Proxy)
+### `sheets` (Proxy)
 
-The `sheet` property is exposed as a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), meaning aliased RN sheet will be created (and cached) on-demand.
+The `sheets` property is exposed as a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), meaning aliased RN sheet will be created (and cached) on-demand.
 
 ```js
-import { sheet } from 'src/styles/space';
-
-<View style={sheet.mb0} />;
+<View style={space.sheets.mb0} />
 ```
 
-### `style` (Proxy)
+### `styles` (Proxy)
 
-The `style` property is exposed as a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), meaning aliased plain style will be created (and cached) on-demand.
+The `styles` property is exposed as a [Proxy](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Proxy), meaning aliased plain style will be created (and cached) on-demand.
 
 ```js
-import space from 'src/styles/space';
-
 <View style={styles.container} />;
 
 const styles = StyleSheet.create({
   container: {
-    ...space.style.p3,
+    ...space.styles.p3,
     flex: 3,
     flexDirection: 'column-reverse',
     // ...
@@ -273,7 +276,6 @@ This is helpful when using with `StyleSheet.create` in the footer of your compon
 
 ```js
 // src/components/foo.js
-import space from 'src/styles/space';
 
 // Everything <Foo />...
 
@@ -289,13 +291,13 @@ StyleSheet.create({
 });
 ```
 
-## Col / Row – Dial (Bonus)
+## Col / Row – "dial"
 
 You can also specify quick flexbox styles thanks to the magic "dial" properties:
 
 ```js
-space.sheet.row5;
-space.style.col8;
+space.sheets.row5;
+space.styles.col8;
 // ...
 ```
 

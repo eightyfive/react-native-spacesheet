@@ -1,12 +1,4 @@
-export function dialCol(dial) {
-  return getStyle('column', dial);
-}
-
-export function dialRow(dial) {
-  return getStyle('row', dial);
-}
-
-function getStyle(flexDirection, dial) {
+export default function getStyle(flexDirection, dial) {
   if (dial < 1 || dial > 9) {
     throw new TypeError('`dial` prop must be between 1 and 9');
   }

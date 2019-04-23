@@ -5,7 +5,7 @@ import _padStart from 'lodash.padstart';
 import createProxyPolyfill from 'proxy-polyfill/src/proxy';
 //
 import defaultStrategy from './strategy';
-import { dialRow, dialCol } from './dial';
+import getDialStyle from './dial';
 
 const Proxy = createProxyPolyfill();
 
@@ -154,10 +154,10 @@ export default class SpaceSheet {
       const [, dialType, dial] = result;
 
       if (dialType === 'col') {
-        return dialCol(dial);
+        return getDialStyle('column', dial);
       }
 
-      return dialRow(dial);
+      return getDialStyle('row', dial);
     }
 
     result = splitProp.exec(prop);

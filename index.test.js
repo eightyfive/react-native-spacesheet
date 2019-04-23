@@ -45,17 +45,17 @@ describe('Default strategy', () => {
   //         [0, 1,  2,  3,  4,  5]
 
   test('Aliases', () => {
-    expect(space.style.mt2).toHaveProperty('marginTop', 10);
-    expect(space.style.mt2).toHaveProperty('marginTop', 10);
-    expect(space.style.mr2).toHaveProperty('marginRight', 10);
-    expect(space.style.mb2).toHaveProperty('marginBottom', 10);
-    expect(space.style.ml2).toHaveProperty('marginLeft', 10);
-    expect(space.style.mv2).toHaveProperty('marginVertical', 10);
-    expect(space.style.mh2).toHaveProperty('marginHorizontal', 10);
+    expect(space.styles.mt2).toHaveProperty('marginTop', 10);
+    expect(space.styles.mt2).toHaveProperty('marginTop', 10);
+    expect(space.styles.mr2).toHaveProperty('marginRight', 10);
+    expect(space.styles.mb2).toHaveProperty('marginBottom', 10);
+    expect(space.styles.ml2).toHaveProperty('marginLeft', 10);
+    expect(space.styles.mv2).toHaveProperty('marginVertical', 10);
+    expect(space.styles.mh2).toHaveProperty('marginHorizontal', 10);
   });
 
   test('Array notation (4)', () => {
-    const result = space.style.m2345;
+    const result = space.styles.m2345;
 
     expect(result).toHaveProperty('marginTop', 10);
     expect(result).toHaveProperty('marginRight', 20);
@@ -64,7 +64,7 @@ describe('Default strategy', () => {
   });
 
   test('Array notation (3)', () => {
-    const result = space.style.p414;
+    const result = space.styles.p414;
 
     expect(result).toHaveProperty('paddingTop', 40);
     expect(result).toHaveProperty('paddingHorizontal', 5);
@@ -72,22 +72,22 @@ describe('Default strategy', () => {
   });
 
   test('Array notation (2)', () => {
-    const result = space.style.m54;
+    const result = space.styles.m54;
 
     expect(result).toHaveProperty('marginVertical', 80);
     expect(result).toHaveProperty('marginHorizontal', 40);
   });
 
   test('Wrong alias', () => {
-    expect(space.style.fooBar).toBeUndefined();
+    expect(space.styles.fooBar).toBeUndefined();
   });
 
   test('Wrong size', () => {
-    expect(space.style.m0123456789).toBeUndefined();
+    expect(space.styles.m0123456789).toBeUndefined();
   });
 
   test('Array notation + margin(Top|Bottom|...)', () => {
-    expect(space.style.mt04).toBeUndefined();
+    expect(space.styles.mt04).toBeUndefined();
   });
 });
 
@@ -95,7 +95,7 @@ describe('Dial', () => {
   const space = new SpaceSheet();
 
   test('Row', () => {
-    const result = space.style.row5;
+    const result = space.styles.row5;
 
     expect(result).toHaveProperty('flexDirection', 'row');
     expect(result).toHaveProperty('justifyContent', 'center');
@@ -103,7 +103,7 @@ describe('Dial', () => {
   });
 
   test('Col', () => {
-    const result = space.style.col3;
+    const result = space.styles.col3;
 
     expect(result).toHaveProperty('flexDirection', 'column');
     expect(result).toHaveProperty('justifyContent', 'flex-start');
@@ -111,7 +111,7 @@ describe('Dial', () => {
   });
 
   test('Wrong dial', () => {
-    expect(space.style.col0).toBeUndefined();
-    expect(space.style.col10).toBeUndefined();
+    expect(space.styles.col0).toBeUndefined();
+    expect(space.styles.col10).toBeUndefined();
   });
 });

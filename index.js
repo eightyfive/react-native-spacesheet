@@ -1,11 +1,11 @@
 import { StyleSheet } from 'react-native';
+import getDialStyle from 'react-native-col/dial';
 import _mapKeys from 'lodash.mapkeys';
 import _get from 'lodash.get';
 import _padStart from 'lodash.padstart';
 import createProxyPolyfill from 'proxy-polyfill/src/proxy';
 //
 import defaultStrategy from './strategy';
-import getDialStyle from './dial';
 
 const Proxy = createProxyPolyfill();
 

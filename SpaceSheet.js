@@ -1,13 +1,7 @@
 import { StyleSheet } from 'react-native';
 import createProxyPolyfill from 'proxy-polyfill/src/proxy';
 
-import {
-  createCache,
-  createDialStyle,
-  createSpaceStyle,
-  reDial,
-  reSpace,
-} from './utils';
+import { createCache, createDialStyle, reDial, reSpace } from './utils';
 
 const Proxy = createProxyPolyfill();
 
@@ -46,8 +40,8 @@ export default class SpaceSheet {
     return cache[prop];
   };
 
-  createSpaceStyle = (prop) => {
-    const [, alias, hand] = reSpace.exec(prop);
+  createSpaceStyle(prop) {
+    const [, alias, size] = reSpace.exec(prop);
 
     const property = this.aliases[alias];
 
@@ -55,24 +49,16 @@ export default class SpaceSheet {
       throw new Error(`Invalid space alias: ${prop}`);
     }
 
-    const sizes = hand.split('').map((index) => {
-      const size = this.sizes[parseInt(index, 10)];
+    const value = this.sizes[parseInt(size, 10)];
 
-      if (!size) {
-        throw new Error(`Invalid space size index: ${prop}`);
-      }
-
-      return size;
-    });
-
-    const isPartial = property !== 'margin' && property !== 'padding';
-
-    if (isPartial && sizes.length > 1) {
-      throw new Error(`Invalid space alias size: ${prop}`);
+    if (!value) {
+      throw new Error(`Invalid space size index: ${prop}`);
     }
 
-    return createSpaceStyle(property, sizes);
-  };
+    return {
+      [property]: value,
+    };
+  }
 
   createStyleSheet = (cache, prop) => {
     let styleSheet = cache[prop];

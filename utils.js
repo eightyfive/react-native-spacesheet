@@ -5,7 +5,7 @@ import getDialStyle from 'react-native-col/dial';
 
 export const reDial = /^(row|col)([1-9])$/;
 
-export const reSpace = /^([a-zA-Z]+)(\d{1,4})$/;
+export const reSpace = /^([a-zA-Z]+)(\d)$/;
 
 /**
  * Limitation of Proxy polyfill (https://github.com/GoogleChrome/proxy-polyfill)
@@ -16,11 +16,7 @@ export const reSpace = /^([a-zA-Z]+)(\d{1,4})$/;
  * mb1, pv2, m202, p1030, etc...
  */
 export function createCache(max, aliases) {
-  const sizes = []
-    .concat(generateSizes(max, 1))
-    .concat(generateSizes(max, 2))
-    .concat(generateSizes(max, 3))
-    .concat(generateSizes(max, 4));
+  const sizes = [].concat(generateSizes(max, 1));
 
   const cache = {};
 

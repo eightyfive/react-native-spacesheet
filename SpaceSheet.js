@@ -5,7 +5,7 @@ import _get from 'lodash.get';
 import _padStart from 'lodash.padstart';
 import createProxyPolyfill from 'proxy-polyfill/src/proxy';
 //
-import defaultStrategy from './strategy';
+import defaultStrategy from './strategies';
 
 const Proxy = createProxyPolyfill();
 

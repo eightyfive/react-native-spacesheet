@@ -1,246 +1,88 @@
 import { StyleSheet } from 'react-native';
-import getDialStyle from 'react-native-col/dial';
-import _mapKeys from 'lodash.mapkeys';
-import _get from 'lodash.get';
-import _padStart from 'lodash.padstart';
 import createProxyPolyfill from 'proxy-polyfill/src/proxy';
-//
-import defaultStrategy from './strategies';
+
+import {
+  createCache,
+  createDialStyle,
+  createSpaceStyle,
+  reDial,
+  reSpace,
+} from './utils';
 
 const Proxy = createProxyPolyfill();
 
-const spaces = Object.values(defaultStrategy.aliases);
-
-const isSpace = new RegExp(`^(${spaces.join('|')})$`);
-const isSpaceArray = /^(margin|padding)$/;
-const isDial = /^(row|col)([1-9])$/;
-const splitProp = /^([a-zA-Z]+)(\d+)$/;
-
 export default class SpaceSheet {
-  sizes = [];
-  strategy = {};
-  shorthands = [];
-
-  styleProxy = null;
-  sheetProxy = null;
-
-  constructor(strategy) {
-    let spacing;
-
-    if (typeof strategy === 'number') {
-      spacing = strategy;
-      strategy = null;
-    }
-
-    this.strategy = strategy || defaultStrategy;
-
-    if (spacing) {
-      this.setSpacing(spacing);
-    }
-  }
-
-  get styles() {
-    if (!this.styleProxy) {
-      this.styleProxy = new Proxy(this.createCache(), { get: this._getStyle });
-    }
-
-    return this.styleProxy;
-  }
-
-  get sheets() {
-    if (!this.sheetProxy) {
-      this.sheetProxy = new Proxy(this.createCache(), { get: this._getSheet });
-    }
-
-    return this.sheetProxy;
-  }
-
-  /**
-   * Limitation of Proxy polyfill (https://github.com/GoogleChrome/proxy-polyfill)
-   *
-   * "This means that the properties you want to proxy *must be known at creation time*."
-   *
-   * Hence we need this method to generate all possible Proxy keys:
-   * mb1, pv2, m202, p1030, etc...
-   */
-  createCache() {
-    const shorthands = this.getSizeShorthands();
-    const cache = {};
-
-    Object.keys(this.strategy.aliases).forEach((alias) => {
-      shorthands.forEach((shorthand) => {
-        cache[`${alias}${shorthand}`] = false;
-      });
-    });
-
-    for (let dial = 1; dial < 10; dial++) {
-      cache[`row${dial}`] = false;
-      cache[`col${dial}`] = false;
-    }
-
-    return cache;
-  }
-
-  /**
-   * Generates all possible shorthands combinations:
-   * 0001, 0002, ..., 0025, 0030, ..., 0455, 0500, ..., 5554, 5555.
-   */
-  getSizeShorthands() {
-    if (!this.shorthands.length) {
-      const total = Math.pow(this.sizes.length, 4);
-
-      let count = 0;
-
-      for (let i = 0; i < total; i++) {
-        const rebased = count.toString(this.sizes.length);
-
-        this.shorthands.push(rebased, _padStart(rebased, 4, '0'));
-
-        count++;
-      }
-    }
-
-    return this.shorthands;
-  }
-
-  setSizes(sizes) {
-    this.shorthands = [];
-    this.styleProxy = null;
-    this.sheetProxy = null;
+  constructor(sizes, aliases) {
     this.sizes = sizes;
+    this.aliases = aliases;
+
+    this.styles = new Proxy(createCache(sizes.length, Object.keys(aliases)), {
+      get: this.createStyle,
+    });
+
+    this.styleSheets = new Proxy(
+      createCache(sizes.length, Object.keys(aliases)),
+      {
+        get: this.createStyleSheet,
+      },
+    );
   }
 
-  setSpacing(amount, range = 5) {
-    const sizes = [];
-
-    for (let index = 1; index <= range; index++) {
-      sizes.push(this.strategy.nextSize(amount, index, range));
-    }
-
-    sizes.unshift(0);
-
-    this.setSizes(sizes);
-  }
-
-  getStyle({ ...style }) {
-    Object.keys(style)
-      .filter((name) => isSpace.test(name))
-      .forEach((name) => {
-        const val = style[name];
-
-        if (Array.isArray(val)) {
-          Object.assign(style, this._getArrayStyle(val, name));
-
-          delete style[name];
-        } else {
-          style[name] = this._getSize(val);
-        }
-      });
-
-    return style;
-  }
-
-  _getStyle = (cache, prop) => {
-    let style = cache[prop];
-
-    if (style) return style;
-
-    let result;
-
-    result = isDial.exec(prop);
-
-    // Is dial?
-    if (result) {
-      const [, dialType, dial] = result;
-
-      if (dialType === 'col') {
-        return getDialStyle('column', dial);
+  createStyle = (cache, prop) => {
+    if (!cache[prop]) {
+      if (reDial.test(prop)) {
+        cache[prop] = createDialStyle(prop);
       }
 
-      return getDialStyle('row', dial);
+      if (reSpace.test(prop)) {
+        cache[prop] = this.createSpaceStyle(prop);
+      }
     }
 
-    result = splitProp.exec(prop);
-
-    if (!result) return; // undefined
-
-    const [, alias, size] = result;
-
-    const unalias = this.strategy.aliases[alias];
-    const isAlias = typeof unalias !== 'undefined';
-    const isSize = size.length === 1;
-    const isSizes =
-      size.length > 1 && size.length <= 4 && isSpaceArray.test(unalias);
-
-    if (isAlias && (isSize || isSizes)) {
-      style = cache[prop] = this._getAliasStyle(alias, size);
-
-      return style;
+    if (!cache[prop]) {
+      throw new Error(`Invalid space property: ${prop}`);
     }
 
-    // return undefined;
+    return cache[prop];
   };
 
-  _getSheet = (cache, prop) => {
-    let sheet = cache[prop];
+  createSpaceStyle = (prop) => {
+    const [, alias, hand] = reSpace.exec(prop);
 
-    if (!sheet) {
-      const style = this.styles[prop];
+    const property = this.aliases[alias];
 
-      if (!style) return; // undefined
-
-      sheet = cache[prop] = StyleSheet.create({ [prop]: style });
+    if (!property) {
+      throw new Error(`Invalid space alias: ${prop}`);
     }
 
-    return sheet[prop];
-  };
+    const sizes = hand.split('').map((index) => {
+      const size = this.sizes[parseInt(index, 10)];
 
-  _getAliasStyle(alias, size) {
-    const unalias = this.strategy.aliases[alias];
+      if (!size) {
+        throw new Error(`Invalid space size index: ${prop}`);
+      }
 
-    return this.getStyle({
-      [unalias]: size.length > 1 ? size.split('') : Number(size),
+      return size;
     });
-  }
 
-  _getArrayStyle(arr, type) {
-    const sizes = arr.map((val) => this._getSize(val));
+    const isPartial = property !== 'margin' && property !== 'padding';
 
-    let sides = {};
-
-    switch (sizes.length) {
-      case 2:
-        sides = {
-          Vertical: sizes[0],
-          Horizontal: sizes[1],
-        };
-        break;
-
-      case 3:
-        sides = {
-          Top: sizes[0],
-          Horizontal: sizes[1],
-          Bottom: sizes[2],
-        };
-        break;
-
-      case 4:
-        sides = {
-          Top: sizes[0],
-          Right: sizes[1],
-          Bottom: sizes[2],
-          Left: sizes[3],
-        };
-        break;
-
-      default:
-        break;
+    if (isPartial && sizes.length > 1) {
+      throw new Error(`Invalid space alias size: ${prop}`);
     }
 
-    return _mapKeys(sides, (size, side) => `${type}${side}`);
-  }
+    return createSpaceStyle(property, sizes);
+  };
 
-  _getSize(val) {
-    return _get(this.sizes, val, val);
-  }
+  createStyleSheet = (cache, prop) => {
+    let styleSheet = cache[prop];
+
+    if (!styleSheet) {
+      styleSheet = cache[prop] = StyleSheet.create({
+        [prop]: this.styles[prop],
+      });
+    }
+
+    return styleSheet[prop];
+  };
 }

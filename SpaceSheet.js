@@ -23,18 +23,12 @@ export default class SpaceSheet {
   }
 
   createStyle = (cache, prop) => {
-    if (!cache[prop]) {
+    if (cache[prop] === false) {
       if (reDial.test(prop)) {
         cache[prop] = createDialStyle(prop);
-      }
-
-      if (reSpace.test(prop)) {
+      } else if (reSpace.test(prop)) {
         cache[prop] = this.createSpaceStyle(prop);
       }
-    }
-
-    if (!cache[prop]) {
-      throw new Error(`Invalid space property: ${prop}`);
     }
 
     return cache[prop];
@@ -45,18 +39,8 @@ export default class SpaceSheet {
 
     const property = this.aliases[alias];
 
-    if (!property) {
-      throw new Error(`Invalid space alias: ${prop}`);
-    }
-
-    const value = this.sizes[parseInt(size, 10)];
-
-    if (!value) {
-      throw new Error(`Invalid space size index: ${prop}`);
-    }
-
     return {
-      [property]: value,
+      [property]: this.sizes[parseInt(size, 10)],
     };
   }
 

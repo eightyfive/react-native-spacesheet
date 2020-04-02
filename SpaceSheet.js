@@ -4,22 +4,20 @@ import createProxyPolyfill from 'proxy-polyfill/src/proxy';
 import { createCache, createDialStyle, reDial, reSpace } from './utils';
 
 const Proxy = createProxyPolyfill();
+const { keys: _keys } = Object;
 
 export default class SpaceSheet {
   constructor(sizes, aliases) {
     this.sizes = sizes;
     this.aliases = aliases;
 
-    this.styles = new Proxy(createCache(sizes.length, Object.keys(aliases)), {
+    this.styles = new Proxy(createCache(sizes.length, _keys(aliases)), {
       get: this.createStyle,
     });
 
-    this.styleSheets = new Proxy(
-      createCache(sizes.length, Object.keys(aliases)),
-      {
-        get: this.createStyleSheet,
-      },
-    );
+    this.sheets = new Proxy(createCache(sizes.length, _keys(aliases)), {
+      get: this.createSheet,
+    });
   }
 
   createStyle = (cache, prop) => {
@@ -27,32 +25,29 @@ export default class SpaceSheet {
       if (reDial.test(prop)) {
         cache[prop] = createDialStyle(prop);
       } else if (reSpace.test(prop)) {
-        cache[prop] = this.createSpaceStyle(prop);
+        const [, alias, size] = reSpace.exec(prop);
+
+        const unalias = this.aliases[alias];
+        const value = this.sizes[parseInt(size, 10)];
+
+        cache[prop] = {
+          [unalias]: value,
+        };
       }
     }
 
     return cache[prop];
   };
 
-  createSpaceStyle(prop) {
-    const [, alias, size] = reSpace.exec(prop);
+  createSheet = (cache, prop) => {
+    let sheet = cache[prop];
 
-    const property = this.aliases[alias];
-
-    return {
-      [property]: this.sizes[parseInt(size, 10)],
-    };
-  }
-
-  createStyleSheet = (cache, prop) => {
-    let styleSheet = cache[prop];
-
-    if (!styleSheet) {
-      styleSheet = cache[prop] = StyleSheet.create({
+    if (!sheet) {
+      sheet = cache[prop] = StyleSheet.create({
         [prop]: this.styles[prop],
       });
     }
 
-    return styleSheet[prop];
+    return sheet[prop];
   };
 }

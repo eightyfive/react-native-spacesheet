@@ -2,16 +2,44 @@ import SpaceSheet from './SpaceSheet';
 import * as strategies from './strategies';
 import { runStrategy, zipAliases } from './utils';
 
-export { aliases, sides, spacings, zipAliases } from './utils';
+export const spacings = {
+  m: 'margin',
+  p: 'padding',
+};
+
+export const sides = {
+  '': '',
+  t: 'Top',
+  r: 'Right',
+  b: 'Bottom',
+  l: 'Left',
+  v: 'Vertical',
+  h: 'Horizontal',
+};
+
+export const aliases = zipAliases(spacings, sides);
+
+export { zipAliases };
 
 export default {
-  create(spacing, range, strategy, aliases) {
-    if (Array.isArray(spacing)) {
-      return new SpaceSheet(spacing, range);
+  create(...args) {
+    let sizes;
+    let names;
+
+    if (args.length > 2) {
+      let amount, range, strategy;
+
+      [amount, range, strategy, names] = args;
+
+      sizes = runStrategy(
+        amount,
+        range,
+        typeof strategy === 'string' ? strategies[strategy] : strategy,
+      );
+    } else {
+      [sizes, names] = args;
     }
 
-    const sizes = runStrategy(spacing, range, strategies[strategy]);
-
-    return new SpaceSheet(sizes, aliases);
+    return new SpaceSheet(sizes, names || aliases);
   },
 };

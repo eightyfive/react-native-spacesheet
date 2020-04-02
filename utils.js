@@ -14,9 +14,15 @@ export const reSpace = /^([a-zA-Z]+)(\d)$/;
  *
  * Hence we need this method to generate all possible Proxy keys:
  * mb1, pv2, m202, p1030, etc...
+ *
+ * @param `rebase` Number: Rebase size index
+ *   - rebase = 4
+ *   - Ex: [0, 4, 8, 16] (sizes)
+ *   - Ex: [0, 1, 2,  3] (indexes)
+ *   - Generates --> p0, p1, p2, p3, m0, m1...
  */
-export function createCache(max, aliases) {
-  const sizes = [].concat(generateSizes(max, 1));
+export function createCache(rebase, aliases) {
+  const sizes = [].concat(generateSizes(rebase, 1));
 
   const cache = {};
 
@@ -41,8 +47,8 @@ export function createDialStyle(prop) {
 }
 
 /**
- * Generates all possible shorthands combinations (max = 5):
- * 0001, 0002, ..., 0025, 0030, ..., 0455, 0500, ..., 5554, 5555.
+ * Generates all sizes combinations (base = 5):
+ * 1, 2, ..., 4, 01, 02, ..., 203, ..., 0330, ..., 4443, 4444.
  */
 export function generateSizes(base, pad) {
   const sizes = [];
@@ -58,7 +64,7 @@ export function generateSizes(base, pad) {
   return sizes;
 }
 
-export function createSpaceStyle(property, sizes) {
+export function createSpaceStyle(prop, sizes) {
   let sides = {};
 
   switch (sizes.length) {
@@ -96,47 +102,28 @@ export function createSpaceStyle(property, sizes) {
       break;
   }
 
-  return _mapKeys(sides, (size, side) => `${property}${side}`);
+  return _mapKeys(sides, (size, side) => `${prop}${side}`);
 }
 
-export function runStrategy(spacing, range, strategy) {
+export function runStrategy(amount, range, strategy) {
   const sizes = [];
 
   for (let i = 0; i < range; i++) {
-    sizes.push(strategy(i, spacing, range));
+    sizes.push(strategy(i, amount, range));
   }
 
   return sizes;
 }
 
+const { keys: _keys, values: _vals } = Object;
+
 export function zipAliases(spacings, sides) {
-  const keys = makeProperties(Object.keys(spacings), Object.keys(sides));
-  const vals = makeProperties(Object.values(spacings), Object.values(sides));
+  const keys = zipNames(_keys(spacings), _keys(sides));
+  const vals = zipNames(_vals(spacings), _vals(sides));
 
   return _zipObject(keys, vals);
 }
 
-function makeProperties(spacings, sides) {
-  const [margins, paddings] = spacings.map((spacing) =>
-    sides.map((side) => `${spacing}${side}`),
-  );
-
-  return margins.concat(paddings);
+function zipNames(lefts, rights) {
+  return lefts.map((left) => rights.map((right) => `${left}${right}`)).flat();
 }
-
-export const spacings = {
-  m: 'margin',
-  p: 'padding',
-};
-
-export const sides = {
-  '': '',
-  t: 'Top',
-  r: 'Right',
-  b: 'Bottom',
-  l: 'Left',
-  v: 'Vertical',
-  h: 'Horizontal',
-};
-
-export const aliases = zipAliases(spacings, sides);

@@ -1,31 +1,45 @@
-import SpaceSheet, { aliases } from './index';
+import SpaceSheet from './index';
 
-const space = SpaceSheet.create(5, 6, 'double', aliases);
+describe('SpaceSheet(amount, range, strategy)', () => {
+  const space = SpaceSheet.create(5, 6, 'double');
+  // sizes = [0, 5, 10, 20, 40, 80]
+  //         [0, 1,  2,  3,  4,  5]
 
-// sizes = [0, 5, 10, 20, 40, 80]
-//         [0, 1,  2,  3,  4,  5]
-
-describe('SpaceSheet', () => {
   test('Aliases', () => {
     expect(space.styles.mt2).toHaveProperty('marginTop', 10);
-    expect(space.styles.mt2).toHaveProperty('marginTop', 10);
-    expect(space.styles.mr2).toHaveProperty('marginRight', 10);
-    expect(space.styles.mb2).toHaveProperty('marginBottom', 10);
-    expect(space.styles.ml2).toHaveProperty('marginLeft', 10);
-    expect(space.styles.mv2).toHaveProperty('marginVertical', 10);
-    expect(space.styles.mh2).toHaveProperty('marginHorizontal', 10);
+    expect(space.styles.pb3).toHaveProperty('paddingBottom', 20);
+    expect(space.styles.mv5).toHaveProperty('marginVertical', 80);
+    expect(space.styles.ph0).toHaveProperty('paddingHorizontal', 0);
   });
 
   test('Wrong alias', () => {
+    // TODO: Needs to throw Error when real Proxy support
     expect(space.styles.fooBar).toBeUndefined();
   });
 
   test('Wrong size', () => {
+    // TODO: Needs to throw Error when real Proxy support
     expect(space.styles.m0123456789).toBeUndefined();
   });
 });
 
+describe('SpaceSheet(sizes)', () => {
+  const space = SpaceSheet.create([0, 4, 8, 16]);
+  // sizes = [0, 4, 8, 16]
+  //         [0, 1, 2,  3]
+
+  test('Aliases', () => {
+    expect(space.styles.mt2).toHaveProperty('marginTop', 8);
+    expect(space.styles.pb3).toHaveProperty('paddingBottom', 16);
+    expect(space.styles.mv1).toHaveProperty('marginVertical', 4);
+    expect(space.styles.ph0).toHaveProperty('paddingHorizontal', 0);
+  });
+});
+
 describe('Dial', () => {
+  // Dummy: No need sizes for testing Dial styles
+  const space = SpaceSheet.create([0, 10, 20]);
+
   test('Row', () => {
     const result = space.styles.row5;
 

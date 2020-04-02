@@ -1,7 +1,6 @@
 import _mapKeys from 'lodash.mapkeys';
 import _padStart from 'lodash.padstart';
 import _zipObject from 'lodash.zipobject';
-import getDialStyle from 'react-native-col/dial';
 
 export const reDial = /^(row|col)([1-9])$/;
 
@@ -22,7 +21,7 @@ export const reSpace = /^([a-zA-Z]+)(\d)$/;
  *   - Generates --> p0, p1, p2, p3, m0, m1...
  */
 export function createCache(rebase, aliases) {
-  const sizes = [].concat(generateSizes(rebase, 1));
+  const sizes = [].concat(createSizes(rebase, 1));
 
   const cache = {};
 
@@ -38,30 +37,6 @@ export function createCache(rebase, aliases) {
   }
 
   return cache;
-}
-
-export function createDialStyle(prop) {
-  const [, dir, dial] = reDial.exec(prop);
-
-  return getDialStyle(dir === 'col' ? 'column' : 'row', dial);
-}
-
-/**
- * Generates all sizes combinations (base = 5):
- * 1, 2, ..., 4, 01, 02, ..., 203, ..., 0330, ..., 4443, 4444.
- */
-export function generateSizes(base, pad) {
-  const sizes = [];
-
-  const total = Math.pow(base, pad);
-
-  for (let i = 0; i < total; i++) {
-    const rebased = i.toString(base);
-
-    sizes.push(_padStart(rebased, pad, '0'));
-  }
-
-  return sizes;
 }
 
 export function createSpaceStyle(prop, sizes) {
@@ -103,6 +78,24 @@ export function createSpaceStyle(prop, sizes) {
   }
 
   return _mapKeys(sides, (size, side) => `${prop}${side}`);
+}
+
+/**
+ * Generates sizes combinations (base = 5):
+ * 1, 2, ..., 4, 01, 02, ..., 203, ..., 0330, ..., 4443, 4444.
+ */
+export function createSizes(base, pad) {
+  const sizes = [];
+
+  const total = Math.pow(base, pad);
+
+  for (let i = 0; i < total; i++) {
+    const rebased = i.toString(base);
+
+    sizes.push(_padStart(rebased, pad, '0'));
+  }
+
+  return sizes;
 }
 
 export function runStrategy(amount, range, strategy) {

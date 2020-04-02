@@ -1,13 +1,13 @@
-import { createCache, generateSizes } from './utils';
+import { createCache, createSizes } from './utils';
 
 let sizes;
 
 describe('Utils', () => {
   test('Generate Sizes', () => {
-    sizes = generateSizes(5, 1);
+    sizes = createSizes(5, 1);
     expect(sizes).toEqual(['0', '1', '2', '3', '4']);
 
-    sizes = generateSizes(4, 2);
+    sizes = createSizes(4, 2);
     expect(sizes).toEqual([
       '00',
       '01',
@@ -27,7 +27,7 @@ describe('Utils', () => {
       '33',
     ]);
 
-    sizes = generateSizes(3, 3);
+    sizes = createSizes(3, 3);
     expect(sizes).toEqual([
       '000',
       '001',
@@ -58,7 +58,7 @@ describe('Utils', () => {
       '222',
     ]);
 
-    sizes = generateSizes(2, 4);
+    sizes = createSizes(2, 4);
     expect(sizes).toEqual([
       '0000',
       '0001',

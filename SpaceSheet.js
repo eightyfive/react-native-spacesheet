@@ -1,7 +1,8 @@
 import { StyleSheet } from 'react-native';
 import createProxyPolyfill from 'proxy-polyfill/src/proxy';
+import createDialStyle from 'react-native-col/dial';
 
-import { createCache, createDialStyle, reDial, reSpace } from './utils';
+import { createCache, reDial, reSpace } from './utils';
 
 const Proxy = createProxyPolyfill();
 const { keys: _keys } = Object;
@@ -23,15 +24,17 @@ export default class SpaceSheet {
   createStyle = (cache, prop) => {
     if (cache[prop] === false) {
       if (reDial.test(prop)) {
-        cache[prop] = createDialStyle(prop);
+        const [, dir, dial] = reDial.exec(prop);
+
+        cache[prop] = createDialStyle(dir === 'col' ? 'column' : 'row', dial);
       } else if (reSpace.test(prop)) {
-        const [, alias, size] = reSpace.exec(prop);
+        const [, alias, index] = reSpace.exec(prop);
 
         const unalias = this.aliases[alias];
-        const value = this.sizes[parseInt(size, 10)];
+        const size = this.sizes[index];
 
         cache[prop] = {
-          [unalias]: value,
+          [unalias]: size,
         };
       }
     }

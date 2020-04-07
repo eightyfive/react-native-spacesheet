@@ -10,7 +10,7 @@ Quick & consistent margin / padding. Spacesheeeeeeeeeeet…!
 $ yarn add react-native-spacesheet
 ```
 
-## Basic Usage
+## Usage
 
 ```js
 // src/space.js

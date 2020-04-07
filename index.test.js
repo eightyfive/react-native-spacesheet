@@ -21,6 +21,17 @@ describe('SpaceSheet(amount, range, strategy)', () => {
     // TODO: Needs to throw Error when real Proxy support
     expect(space.styles.m0123456789).toBeUndefined();
   });
+
+  test('getStyle', () => {
+    const style = space.getStyle({
+      marginTop: 22,
+      mv: 4,
+      p: 1,
+    });
+    expect(style).toHaveProperty('marginTop', 22);
+    expect(style).toHaveProperty('marginVertical', 40);
+    expect(style).toHaveProperty('padding', 5);
+  });
 });
 
 describe('SpaceSheet(sizes)', () => {
@@ -59,5 +70,22 @@ describe('Dial', () => {
   test('Wrong dial', () => {
     expect(space.styles.col0).toBeUndefined();
     expect(space.styles.col10).toBeUndefined();
+  });
+});
+
+describe('Flex', () => {
+  // Dummy: No need sizes for testing Flex styles
+  const space = SpaceSheet.create([0, 10, 20]);
+
+  test('Valid', () => {
+    for (let i = 1; i < 10; i++) {
+      expect(space.styles[`flex${i || ''}`]).toHaveProperty('flex', +i || 1);
+    }
+  });
+
+  test('Invalid', () => {
+    expect(space.styles.flex).toBeUndefined();
+    expect(space.styles.flex0).toBeUndefined();
+    expect(space.styles.flex10).toBeUndefined();
   });
 });

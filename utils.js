@@ -4,6 +4,8 @@ import _zipObject from 'lodash.zipobject';
 
 export const reDial = /^(row|col)([1-9])$/;
 
+export const reFlex = /^flex([1-9])$/;
+
 export const reSpace = /^([a-zA-Z]+)(\d)$/;
 
 /**
@@ -31,9 +33,15 @@ export function createCache(rebase, aliases) {
     });
   });
 
+  // Dial
   for (let dial = 1; dial < 10; dial++) {
     cache[`row${dial}`] = false;
     cache[`col${dial}`] = false;
+  }
+
+  // Flex
+  for (let grow = 1; grow < 10; grow++) {
+    cache[`flex${grow}`] = false;
   }
 
   return cache;

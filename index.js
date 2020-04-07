@@ -1,35 +1,34 @@
+import _defaults from 'lodash.defaults';
+
 import SpaceSheet from './SpaceSheet';
 import * as strategies from './strategies';
 import { runStrategy, zipAliases } from './utils';
 
-export const spacings = {
-  m: 'margin',
-  p: 'padding',
+const defaultOptions = {
+  spacings: {
+    m: 'margin',
+    p: 'padding',
+  },
+  sides: {
+    '': '',
+    t: 'Top',
+    r: 'Right',
+    b: 'Bottom',
+    l: 'Left',
+    v: 'Vertical',
+    h: 'Horizontal',
+  },
 };
-
-export const sides = {
-  '': '',
-  t: 'Top',
-  r: 'Right',
-  b: 'Bottom',
-  l: 'Left',
-  v: 'Vertical',
-  h: 'Horizontal',
-};
-
-export const aliases = zipAliases(spacings, sides);
-
-export { zipAliases };
 
 export default {
   create(...args) {
     let sizes;
-    let names;
+    let options;
 
     if (args.length > 2) {
       let amount, range, strategy;
 
-      [amount, range, strategy, names] = args;
+      [amount, range, strategy, options = {}] = args;
 
       sizes = runStrategy(
         amount,
@@ -37,9 +36,13 @@ export default {
         typeof strategy === 'string' ? strategies[strategy] : strategy,
       );
     } else {
-      [sizes, names] = args;
+      [sizes, options = {}] = args;
     }
 
-    return new SpaceSheet(sizes, names || aliases);
+    _defaults(options, defaultOptions);
+
+    const aliases = zipAliases(options.spacings, options.sides);
+
+    return new SpaceSheet(sizes, aliases);
   },
 };

@@ -26,6 +26,7 @@
   },
   "homepage": "https://github.com/eightyfive/react-native-spacesheet#readme",
   "dependencies": {
+    "lodash.defaults": "^4.2.0",
     "lodash.mapkeys": "^4.6.0",
     "lodash.padstart": "^4.6.1",
     "lodash.zipobject": "^4.1.3",

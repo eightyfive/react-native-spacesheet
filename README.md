@@ -69,7 +69,6 @@ const space = SpaceSheet.create(5, 6, 'double');
 
 - `5, 4, 'double'`: `[0, 5, 10, 20]`
 - `2, 6, 'linear'`: `[0, 2, 4, 6, 8, 10]`
-- `4, 4, 'multiply'`: `[0, 16, 32, 48]`
 
 ### Custom strategy
 
@@ -82,8 +81,8 @@ const space = SpaceSheet.create(
   (index, amount, range) => index * amount + 3,
 );
 
-// sizes = [0, 7, 9, 13]
-//         [0, 1, 2,  3]
+// sizes = [0, 7, 11, 15]
+//         [0, 1,  2,  3]
 ```
 
 ## API
@@ -135,7 +134,7 @@ The aliases will be:
 
 ```js
 space.getStyle({
-  mt: 2, // <— { marginTop: <size at index `2`> }
+  mt: 2, // <— Will be replaced by marginTop: <size at index `2`>
   flex: 3,
 });
 
@@ -147,7 +146,7 @@ space.getStyle({
 
 ### `sheets` (Proxy)
 
-RN sheet is created (and cached) on-demand.
+Style sheet is created (and cached) on-demand.
 
 ```js
 <View style={space.sheets.mb0} />
@@ -190,8 +189,8 @@ The `flex([1-9])` property assigns quick flex grow values:
 
 ```js
 space.sheets.flex1; // { flex: 1 }
-space.sheets.flex2; // { flex: 2 }
-// Etc…
+space.styles.flex2; // { flex: 2 }
+// Etc...
 ```
 
 ## Credits

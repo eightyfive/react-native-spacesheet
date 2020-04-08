@@ -1,6 +1,6 @@
 import SpaceSheet from './index';
 
-describe('SpaceSheet(amount, range, strategy)', () => {
+describe('SpaceSheet(amount, length, strategy)', () => {
   const space = SpaceSheet.create(5, 6, 'double');
   // sizes = [0, 5, 10, 20, 40, 80]
   //         [0, 1,  2,  3,  4,  5]
@@ -20,17 +20,6 @@ describe('SpaceSheet(amount, range, strategy)', () => {
   test('Wrong size', () => {
     // TODO: Needs to throw Error when real Proxy support
     expect(space.styles.m0123456789).toBeUndefined();
-  });
-
-  test('getStyle', () => {
-    const style = space.getStyle({
-      marginTop: 22,
-      mv: 4,
-      p: 1,
-    });
-    expect(style).toHaveProperty('marginTop', 22);
-    expect(style).toHaveProperty('marginVertical', 40);
-    expect(style).toHaveProperty('padding', 5);
   });
 });
 

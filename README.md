@@ -22,10 +22,70 @@ export const s = space.styles;
 export const ss = space.sheets;
 
 // src/components/foo.js
-import { ss } from '../space';
+import { s, ss } from '../space';
 
-const Foo = () => <View style={ss.mb3} />;
-// { marginBottom: 20 }
+const styles = StyleSheet.create({
+  ...s.p1,
+  flex: 1,
+});
+
+const Foo = () => <View style={[ss.mb3, styles.container]} />;
+// { marginBottom: 20, padding: 5, flex: 1 }
+```
+
+## Auto-generated styles
+
+`space.styles` and `space.sheets` are Proxies that create a style according to a given _alias_.
+
+```js
+space.styles.mb0; // { marginBottom: 0 }
+```
+
+- `sheets.*` returns style sheets
+- `styles.*` returns plain style objects
+
+### Style alias
+
+An alias is made of 3 parts:
+
+- A "spacing": either margin or padding
+- A "side": either top, right, bottom, left, vertical or horizontal
+- A "size" _index_: `[0-9]`
+
+The "spacing" and "side" parts are aliased like so:
+
+```
+const [ , spacing, side, size] = /(m|p)|(t|r|b|l||v|h)?(\d)/.exec('mb0');
+
+spacing; // "m"
+side; // "b"
+size; // "0"
+```
+
+Aliases are fully configurable (see `create` API) but here are the default ones:
+
+```json
+{
+  "spacings": {
+    "m": "margin",
+    "p": "padding"
+  },
+  "sides": {
+    "": "",
+    "t": "Top",
+    "r": "Right",
+    "b": "Bottom",
+    "l": "Left",
+    "v": "Vertical",
+    "h": "Horizontal"
+  }
+}
+```
+
+Which when combined, gives us:
+
+```
+mt, mr, mb, ..., pt, ..., pv, ph.
 ```
 
 ## Size "indexes"
@@ -38,68 +98,78 @@ Meaning that you don't pass the actual size value to your styles, but its index 
 const space = SpaceSheet.create([0, 5, 10, 20, 40]);
 //                    indexes = [0, 1,  2,  3,  4]
 
-space.styles.mb1; // marginBottom: 5
-
-space.sheets.pt4; // paddingTop: 40
-
-space.getStyle({
-  mt: 3, // marginTop: 20
-  ph: 1, // paddingHorizontal: 5
-});
+space.styles.mb1; // { marginBottom: 5 }
+space.sheets.pt3; // { paddingTop: 20 }
 ```
 
-This helps you keep a consistent spacing strategy in your React Native project.
-
-## Custom aliases
-
-See API `options`.
+This helps you keep spacing consistency throughout your project.
 
 ## Spacing strategies
 
 You can also define your set of sizes with "strategies":
 
 ```js
-// SpaceSheet.create(amount, range, strategyName);
+// SpaceSheet.create(amount, length, strategy);
 const space = SpaceSheet.create(5, 6, 'double');
-// sizes = [0, 5, 10, 20, 40, 80]
-//         [0, 1,  2,  3,  4,  5]
+
+space.sizes; // [0, 5, 10, 20, 40, 80]
+//              [0, 1,  2,  3,  4,  5]
 ```
 
 ### Available strategies
 
-- `5, 4, 'double'`: `[0, 5, 10, 20]`
-- `2, 6, 'linear'`: `[0, 2, 4, 6, 8, 10]`
+#### Double
+
+```js
+const space = SpaceSheet.create(5, 4, 'double');
+
+space.sizes; // [0, 5, 10, 20]
+//              [0, 1,  2,  3]
+```
+
+#### Linear
+
+```js
+const space = SpaceSheet.create(2, 6, 'linear');
+
+space.sizes; // [0, 2, 4, 6, 8, 10]
+//              [0, 1, 2, 3, 4,  5]
+```
 
 ### Custom strategy
 
-You can also pass a `function` instead of a strategy name as the last argument:
+You can also pass a `function` instead of a strategy name:
 
 ```js
-const space = SpaceSheet.create(
-  4,
-  4,
-  (index, amount, range) => index * amount + 3,
-);
+const space = SpaceSheet.create(4, 4, (index, amount) => index * amount * 10);
 
-// sizes = [0, 7, 11, 15]
-//         [0, 1,  2,  3]
+space.sizes; // [0, 40, 80, 120]
+//              [0,  1,  2,   3]
 ```
 
 ## API
 
-### `create(sizes, options = {})`
+### `create`
+
+#### `create(sizes)`
 
 ```js
 const space = SpaceSheet.create([0, 5, 10, 15, 20]);
+
+space.sizes; // [0, 5, 10, 15, 20]
+//              [0, 1,  2,  3,  4]
 ```
 
-### `create(amount, range, strategy, options = {})`
+#### `create(amount, length, strategy)`
 
 ```js
 const space = SpaceSheet.create(5, 5, 'linear');
+
+space.sizes; // [0, 5, 10, 15, 20]
+//              [0, 1,  2,  3,  4]
 ```
 
-### `options` (Custom aliases)
+#### `create(..., options = {})` (Custom aliases)
 
 ```js
 const space = SpaceSheet.create([0, 5, 10, 15, 20], {
@@ -119,34 +189,15 @@ const space = SpaceSheet.create([0, 5, 10, 15, 20], {
 });
 ```
 
-The aliases will be:
+Will work with the following aliases:
 
-```json
-{
-  "MarT": "marginTop",
-  "MarR": "marginRight",
-  "PadT": "paddingTop",
-  "PadV": "paddingVertical"
-}
 ```
-
-### `getStyle`
-
-```js
-space.getStyle({
-  mt: 2, // <— Will be replaced by marginTop: <size at index `2`>
-  flex: 3,
-});
-
-space.getStyle({
-  marginTop: 2, // <— Will NOT be replaced
-  flex: 3,
-});
+MarT, MarR, MarB, ..., PadT, ..., PadV, PadH.
 ```
 
 ### `sheets` (Proxy)
 
-Style sheet is created (and cached) on-demand.
+Creates (and cache) aliased style sheets on-the-fly.
 
 ```js
 <View style={space.sheets.mb0} />
@@ -154,7 +205,7 @@ Style sheet is created (and cached) on-demand.
 
 ### `styles` (Proxy)
 
-Plain style is created (and cached) on-demand.
+Creates (and cache) aliased plain styles on-the-fly.
 
 ```js
 <View style={styles.container} />;
@@ -179,7 +230,7 @@ space.styles.col8;
 // ...
 ```
 
-`(row|col)` gives the main axis direction, while the following `[1-9]` number specifies the [dial number](https://github.com/eightyfive/react-native-col) to align/justify the children against.
+`(row|col)` gives the main axis direction, while the following `[1-9]` number specifies the [dial number](https://github.com/eightyfive/react-native-col) to align / justify the children against.
 
 See more information about the "dial" shorthand syntax in the [react-native-col](https://github.com/eightyfive/react-native-col) project documentation.
 

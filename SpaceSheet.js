@@ -57,18 +57,4 @@ export default class SpaceSheet {
 
     return sheet[prop];
   };
-
-  getStyle({ ...style }) {
-    for (const [alias, size] of Object.entries(style)) {
-      const unalias = this.aliases[alias];
-
-      if (unalias) {
-        style[unalias] = this.sizes[size];
-
-        delete style[alias];
-      }
-    }
-
-    return style;
-  }
 }

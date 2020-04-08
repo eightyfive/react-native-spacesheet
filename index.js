@@ -26,13 +26,13 @@ export default {
     let options;
 
     if (args.length > 2) {
-      let amount, range, strategy;
+      let amount, length, strategy;
 
-      [amount, range, strategy, options = {}] = args;
+      [amount, length, strategy, options = {}] = args;
 
       sizes = runStrategy(
         amount,
-        range,
+        length,
         typeof strategy === 'string' ? strategies[strategy] : strategy,
       );
     } else {

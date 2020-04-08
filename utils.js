@@ -106,11 +106,11 @@ export function createSizes(base, pad) {
   return sizes;
 }
 
-export function runStrategy(amount, range, strategy) {
+export function runStrategy(amount, length, strategy) {
   const sizes = [];
 
-  for (let i = 0; i < range; i++) {
-    sizes.push(strategy(i, amount, range));
+  for (let i = 0; i < length; i++) {
+    sizes.push(strategy(i, amount));
   }
 
   return sizes;

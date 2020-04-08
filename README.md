@@ -62,7 +62,7 @@ side; // "b"
 size; // "0"
 ```
 
-Aliases are fully configurable (see [`create` API](https://github.com/eightyfive/react-native-spacesheet/blob/master/README.md#create-options---custom-aliases)) but here are the default ones:
+Aliases are fully configurable (see [`create` API](#create-options---custom-aliases)) but here are the default ones:
 
 ```json
 {

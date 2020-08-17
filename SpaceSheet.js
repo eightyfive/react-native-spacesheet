@@ -5,18 +5,19 @@ import createDialStyle from 'react-native-col/dial';
 import { createCache, reDial, reFlex, reSpace } from './utils';
 
 const Proxy = createProxyPolyfill();
-const { keys: _keys } = Object;
+const o = Object;
 
 export default class SpaceSheet {
   constructor(sizes, aliases) {
-    this.sizes = sizes;
     this.aliases = aliases;
+    this.defaultSize = Math.round(sizes.length / 2);
+    this.sizes = sizes;
 
-    this.styles = new Proxy(createCache(sizes.length, _keys(aliases)), {
+    this.styles = new Proxy(createCache(sizes.length, o.keys(aliases)), {
       get: this.createStyle,
     });
 
-    this.sheets = new Proxy(createCache(sizes.length, _keys(aliases)), {
+    this.sheets = new Proxy(createCache(sizes.length, o.keys(aliases)), {
       get: this.createSheet,
     });
   }
@@ -57,4 +58,22 @@ export default class SpaceSheet {
 
     return sheet[prop];
   };
+
+  // Extracts space props
+  extract(props) {
+    const styles = [];
+    const rest = {};
+
+    for (const [key, val] of o.entries(props)) {
+      if (this.aliases[key]) {
+        styles.push(
+          this.sheets[`${key}${val === true ? this.defaultSize : val}`],
+        );
+      } else {
+        rest[key] = val;
+      }
+    }
+
+    return [styles, rest];
+  }
 }

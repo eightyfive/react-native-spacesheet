@@ -54,7 +54,7 @@ An alias is made of 3 parts:
 
 The "spacing" and "side" parts are aliased like so:
 
-```
+```js
 const [ , spacing, side, size] = /(m|p)|(t|r|b|l||v|h)?(\d)/.exec('mb0');
 
 spacing; // "m"
@@ -62,7 +62,7 @@ side; // "b"
 size; // "0"
 ```
 
-Aliases are fully configurable (see `create` API) but here are the default ones:
+Aliases are fully configurable (see [`create` API](#create-options---custom-aliases)) but here are the default ones:
 
 ```json
 {

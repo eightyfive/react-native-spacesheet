@@ -41,7 +41,7 @@ export function createCache(rebase, aliases) {
 
   // Flex
   for (let grow = 1; grow < 10; grow++) {
-    cache[`flex${grow}`] = false;
+    cache[`f${grow}`] = false;
   }
 
   return cache;

@@ -68,13 +68,13 @@ describe('Flex', () => {
 
   test('Valid', () => {
     for (let i = 1; i < 10; i++) {
-      expect(space.styles[`flex${i || ''}`]).toHaveProperty('flex', +i || 1);
+      expect(space.styles[`f${i || ''}`]).toHaveProperty('flex', +i || 1);
     }
   });
 
   test('Invalid', () => {
-    expect(space.styles.flex).toBeUndefined();
-    expect(space.styles.flex0).toBeUndefined();
-    expect(space.styles.flex10).toBeUndefined();
+    expect(space.styles.f).toBeUndefined();
+    expect(space.styles.f0).toBeUndefined();
+    expect(space.styles.f10).toBeUndefined();
   });
 });

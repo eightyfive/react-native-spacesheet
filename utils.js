@@ -4,7 +4,7 @@ import _zipObject from 'lodash.zipobject';
 
 export const reDial = /^(row|col)([1-9])$/;
 
-export const reFlex = /^flex([1-9])$/;
+export const reFlex = /^f([1-9])$/;
 
 export const reSpace = /^([a-zA-Z]+)(\d)$/;
 

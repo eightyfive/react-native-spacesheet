@@ -4,7 +4,8 @@
   "description": "Consistent margin/padding React Native styles",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "release": "np --no-2fa --no-draft-release"
   },
   "repository": {
     "type": "git",

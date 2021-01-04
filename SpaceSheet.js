@@ -5,12 +5,12 @@ import createDialStyle from 'react-native-col/dial';
 import { createCache, reDial, reFlex, reSpace } from './utils';
 
 const Proxy = createProxyPolyfill();
+
 const o = Object;
 
 export default class SpaceSheet {
   constructor(sizes, aliases) {
     this.aliases = aliases;
-    this.defaultSize = Math.round(sizes.length / 2);
     this.sizes = sizes;
 
     this.styles = new Proxy(createCache(sizes.length, o.keys(aliases)), {
@@ -34,13 +34,39 @@ export default class SpaceSheet {
         cache[prop] = createDialStyle(dir === 'col' ? 'column' : 'row', dial);
       } else if (reSpace.test(prop)) {
         const [, alias, index] = reSpace.exec(prop);
+        const indexes = index.split('');
 
         const unalias = this.aliases[alias];
-        const size = this.sizes[index];
 
-        cache[prop] = {
-          [unalias]: size,
-        };
+        if (indexes.length === 1) {
+          cache[prop] = {
+            [unalias]: this.sizes[indexes[0]],
+          };
+        }
+
+        if (indexes.length === 2) {
+          cache[prop] = {
+            [`${unalias}Vertical`]: this.sizes[indexes[0]],
+            [`${unalias}Horizontal`]: this.sizes[indexes[1]],
+          };
+        }
+
+        if (indexes.length === 3) {
+          cache[prop] = {
+            [`${unalias}Top`]: this.sizes[indexes[0]],
+            [`${unalias}Horizontal`]: this.sizes[indexes[1]],
+            [`${unalias}Bottom`]: this.sizes[indexes[2]],
+          };
+        }
+
+        if (indexes.length === 4) {
+          cache[prop] = {
+            [`${unalias}Top`]: this.sizes[indexes[0]],
+            [`${unalias}Right`]: this.sizes[indexes[1]],
+            [`${unalias}Bottom`]: this.sizes[indexes[2]],
+            [`${unalias}Left`]: this.sizes[indexes[3]],
+          };
+        }
       }
     }
 
@@ -59,3 +85,24 @@ export default class SpaceSheet {
     return sheet[prop];
   };
 }
+
+const defaultAliases = {
+  m: 'margin',
+  mt: 'marginTop',
+  mr: 'marginRight',
+  mb: 'marginBottom',
+  ml: 'marginLeft',
+  mv: 'marginVertical',
+  mh: 'marginHorizontal',
+  p: 'padding',
+  pt: 'paddingTop',
+  pr: 'paddingRight',
+  pb: 'paddingBottom',
+  pl: 'paddingLeft',
+  pv: 'paddingVertical',
+  ph: 'paddingHorizontal',
+};
+
+SpaceSheet.create = function createSpaceSheet(sizes, aliases = defaultAliases) {
+  return new SpaceSheet(sizes, aliases);
+};

@@ -12,23 +12,50 @@ $ yarn add react-native-spacesheet
 
 ## Usage
 
+Create your space sheet given a set of sizes:
+
 ```js
 // src/space.js
 import SpaceSheet from 'react-native-spacesheet';
 
-const space = SpaceSheet.create([0, 5, 10, 20, 40]);
+const space = new SpaceSheet.create([0, 5, 10, 20, 40]);
 
 export const s = space.styles;
 export const ss = space.sheets;
 
+export default space;
+```
+
+Optionally create a `Box` [view](https://reactnative.dev/docs/view) that accepts spacing shorthands as properties:
+
+```js
+// src/box.js
+import { makeView } from 'react-native-spacesheet';
+
+import space from './space';
+
+export default makeView(space);
+
+
+// Usage:
+<Box p={3} />
+<Box pv="4" />
+<Box m="4 2 1 1" />
+```
+
+Or use the styles and/or sheets directly in your components:
+
+```js
 // src/components/foo.js
 import { s, ss } from '../space';
 
+// plain styles (`s.p1`)
 const styles = StyleSheet.create({
   ...s.p1,
   flex: 1,
 });
 
+// And/or sheets (`ss.mb3`)
 const Foo = () => <View style={[ss.mb3, styles.container]} />;
 // { marginBottom: 20, padding: 5, flex: 1 }
 ```
@@ -55,44 +82,45 @@ An alias is made of 3 parts:
 The "spacing" and "side" parts are aliased like so:
 
 ```js
-const [ , spacing, side, size] = /(m|p)|(t|r|b|l||v|h)?(\d)/.exec('mb0');
+const [, spacing, side, size] = /(m|p)|(t|r|b|l||v|h)?(\d+)/.exec('mb0');
 
 spacing; // "m"
 side; // "b"
 size; // "0"
 ```
 
-Aliases are fully configurable (see [`create` API](#create-options---custom-aliases)) but here are the default ones:
+You can pass your own aliases to the `create` method:
 
-```json
-{
-  "spacings": {
-    "m": "margin",
-    "p": "padding"
-  },
-  "sides": {
-    "": "",
-    "t": "Top",
-    "r": "Right",
-    "b": "Bottom",
-    "l": "Left",
-    "v": "Vertical",
-    "h": "Horizontal"
-  }
-}
+```js
+const space = SpaceSheet.create([0, 5, 10, 20, 40], myAliases);
 ```
 
-Which when combined, gives us:
+But here are the default ones:
 
-```
-mt, mr, mb, ..., pt, ..., pv, ph.
+```js
+const defaultAliases = {
+  m: 'margin',
+  mt: 'marginTop',
+  mr: 'marginRight',
+  mb: 'marginBottom',
+  ml: 'marginLeft',
+  mv: 'marginVertical',
+  mh: 'marginHorizontal',
+  p: 'padding',
+  pt: 'paddingTop',
+  pr: 'paddingRight',
+  pb: 'paddingBottom',
+  pl: 'paddingLeft',
+  pv: 'paddingVertical',
+  ph: 'paddingHorizontal',
+};
 ```
 
 ## Size "indexes"
 
 Margin and padding sizes are inspired by [Bootstrap v4 spacing utility system](https://getbootstrap.com/docs/4.0/utilities/spacing/).
 
-Meaning that you don't pass the actual size value to your styles, but its index instead:
+Meaning that you don't use the actual size for your styles, but its index instead:
 
 ```js
 const space = SpaceSheet.create([0, 5, 10, 20, 40]);
@@ -102,56 +130,13 @@ space.styles.mb1; // { marginBottom: 5 }
 space.sheets.pt3; // { paddingTop: 20 }
 ```
 
-This helps you keep spacing consistency throughout your project.
-
-## Spacing strategies
-
-You can also define your set of sizes with "strategies":
-
-```js
-// SpaceSheet.create(amount, length, strategy);
-const space = SpaceSheet.create(5, 6, 'double');
-
-space.sizes; // [0, 5, 10, 20, 40, 80]
-//              [0, 1,  2,  3,  4,  5]
-```
-
-### Available strategies
-
-#### Double
-
-```js
-const space = SpaceSheet.create(5, 4, 'double');
-
-space.sizes; // [0, 5, 10, 20]
-//              [0, 1,  2,  3]
-```
-
-#### Linear
-
-```js
-const space = SpaceSheet.create(2, 6, 'linear');
-
-space.sizes; // [0, 2, 4, 6, 8, 10]
-//              [0, 1, 2, 3, 4,  5]
-```
-
-### Custom strategy
-
-You can also pass a `function` instead of a strategy name:
-
-```js
-const space = SpaceSheet.create(4, 4, (index, amount) => index * amount * 10);
-
-space.sizes; // [0, 40, 80, 120]
-//              [0,  1,  2,   3]
-```
+This helps you to keep spacing consistent throughout your project.
 
 ## API
 
-### `create`
+### `create(sizes, aliases = defaultAliases)`
 
-#### `create(sizes)`
+Using the default aliases:
 
 ```js
 const space = SpaceSheet.create([0, 5, 10, 15, 20]);
@@ -160,39 +145,31 @@ space.sizes; // [0, 5, 10, 15, 20]
 //              [0, 1,  2,  3,  4]
 ```
 
-#### `create(amount, length, strategy)`
-
-```js
-const space = SpaceSheet.create(5, 5, 'linear');
-
-space.sizes; // [0, 5, 10, 15, 20]
-//              [0, 1,  2,  3,  4]
-```
-
-#### `create(..., options = {})` (Custom aliases)
+Or specifying yours:
 
 ```js
 const space = SpaceSheet.create([0, 5, 10, 15, 20], {
-  spacings: {
-    Mar: 'margin',
-    Pad: 'padding',
-  },
-  sides: {
-    '': '',
-    T: 'Top',
-    R: 'Right',
-    B: 'Bottom',
-    L: 'Left',
-    V: 'Vertical',
-    H: 'Horizontal',
-  },
+  Mar: 'margin',
+  MarT: 'marginTop',
+  MarR: 'marginRight',
+  MarB: 'marginBottom',
+  MarL: 'marginLeft',
+  MarY: 'marginVertical',
+  MarX: 'marginHorizontal',
+  Pad: 'padding',
+  PadT: 'paddingTop',
+  PadR: 'paddingRight',
+  PadB: 'paddingBottom',
+  PadL: 'paddingLeft',
+  PadY: 'paddingVertical',
+  PadX: 'paddingHorizontal',
 });
 ```
 
-Will work with the following aliases:
+It will work with the following aliases:
 
 ```
-MarT, MarR, MarB, ..., PadT, ..., PadV, PadH.
+MarT, MarR, MarB, ..., PadT, ..., PadY, PadX.
 ```
 
 ### `sheets` (Proxy)
@@ -200,7 +177,9 @@ MarT, MarR, MarB, ..., PadT, ..., PadV, PadH.
 Creates (and cache) aliased style sheets on-the-fly.
 
 ```js
-<View style={space.sheets.mb0} />
+const ss = space.sheets;
+
+<View style={ss.mb0} />;
 ```
 
 ### `styles` (Proxy)
@@ -208,16 +187,18 @@ Creates (and cache) aliased style sheets on-the-fly.
 Creates (and cache) aliased plain styles on-the-fly.
 
 ```js
-<View style={styles.container} />;
+const s = space.styles;
 
 const styles = StyleSheet.create({
   container: {
-    ...space.styles.p3,
+    ...s.p3,
     flex: 3,
     flexDirection: 'column-reverse',
     // ...
   },
 });
+
+<View style={styles.container} />;
 ```
 
 ## Col / Row – "dial"
@@ -230,17 +211,17 @@ space.styles.col8;
 // ...
 ```
 
-`(row|col)` gives the main axis direction, while the following `[1-9]` number specifies the [dial number](https://github.com/eightyfive/react-native-col) to align / justify the children against.
+`(row|col)` gives the main axis direction, while the following `[1-9]` number specifies the "dial number" to align / justify the children against.
 
-See more information about the "dial" shorthand syntax in the [react-native-col](https://github.com/eightyfive/react-native-col) project documentation.
+See more information about the "dial number" syntax in the [react-native-col](https://github.com/eightyfive/react-native-col) project documentation.
 
 ## Flex
 
-The `flex([1-9])` property assigns quick flex grow values:
+The `f([0-9])` property assigns quick flex grow values:
 
 ```js
-space.sheets.flex1; // { flex: 1 }
-space.styles.flex2; // { flex: 2 }
+space.sheets.f1; // { flex: 1 }
+space.styles.f2; // { flex: 2 }
 // Etc...
 ```
 

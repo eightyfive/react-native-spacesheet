@@ -1,4 +1,4 @@
-import { createCache, createSizes } from './utils';
+import { createSizes } from './utils';
 
 let sizes;
 

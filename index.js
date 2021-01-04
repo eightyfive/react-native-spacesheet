@@ -1,48 +1,14 @@
-import _defaults from 'lodash.defaults';
+import { View } from 'react-native';
 
 import SpaceSheet from './SpaceSheet';
-import * as strategies from './strategies';
-import { runStrategy, zipAliases } from './utils';
+import { propsToStyles } from './utils';
 
-const defaultOptions = {
-  spacings: {
-    m: 'margin',
-    p: 'padding',
-  },
-  sides: {
-    '': '',
-    t: 'Top',
-    r: 'Right',
-    b: 'Bottom',
-    l: 'Left',
-    v: 'Vertical',
-    h: 'Horizontal',
-  },
-};
+export function makeView(space) {
+  return ({ style, ...rest }) => {
+    const [props, styles] = propsToStyles(rest, space);
 
-export default {
-  create(...args) {
-    let sizes;
-    let options;
+    return <View {...props} style={[...styles, style]} />;
+  };
+}
 
-    if (args.length > 2) {
-      let amount, length, strategy;
-
-      [amount, length, strategy, options = {}] = args;
-
-      sizes = runStrategy(
-        amount,
-        length,
-        typeof strategy === 'string' ? strategies[strategy] : strategy,
-      );
-    } else {
-      [sizes, options = {}] = args;
-    }
-
-    _defaults(options, defaultOptions);
-
-    const aliases = zipAliases(options.spacings, options.sides);
-
-    return new SpaceSheet(sizes, aliases);
-  },
-};
+export default SpaceSheet;

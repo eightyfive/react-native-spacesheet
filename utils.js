@@ -2,11 +2,13 @@ import _mapKeys from 'lodash.mapkeys';
 import _padStart from 'lodash.padstart';
 import _zipObject from 'lodash.zipobject';
 
+const o = Object;
+
 export const reDial = /^(row|col)([1-9])$/;
 
-export const reFlex = /^f([1-9])$/;
+export const reFlex = /^f([0-9])$/;
 
-export const reSpace = /^([a-zA-Z]+)(\d)$/;
+export const reSpace = /^([a-zA-Z]+)(\d+)$/;
 
 /**
  * Limitation of Proxy polyfill (https://github.com/GoogleChrome/proxy-polyfill)
@@ -27,6 +29,7 @@ export function createCache(rebase, aliases) {
 
   const cache = {};
 
+  // Spacing
   aliases.forEach((alias) => {
     sizes.forEach((size) => {
       cache[`${alias}${size}`] = false;
@@ -116,15 +119,37 @@ export function runStrategy(amount, length, strategy) {
   return sizes;
 }
 
-const { keys: _keys, values: _vals } = Object;
-
-export function zipAliases(spacings, sides) {
-  const keys = zipNames(_keys(spacings), _keys(sides));
-  const vals = zipNames(_vals(spacings), _vals(sides));
-
-  return _zipObject(keys, vals);
+// Credits: https://github.com/lodash/lodash/issues/3172#issuecomment-352773355
+function partitionObject(obj, filterFn) {
+  return o.keys(obj).reduce(
+    (result, key) => {
+      result[filterFn(key, obj[key]) ? 0 : 1][key] = obj[key];
+      return result;
+    },
+    [{}, {}],
+  );
 }
 
-function zipNames(lefts, rights) {
-  return lefts.map((left) => rights.map((right) => `${left}${right}`)).flat();
+export function propsToStyles(props, space) {
+  const [rest, aliasProps] = partitionObject(
+    props,
+    (key) => !space.aliases[key],
+  );
+
+  const styles = o.entries(aliasProps).map(([alias, val]) => {
+    let indexes;
+
+    if (Array.isArray(val)) {
+      indexes = val;
+    } else if (typeof val === 'string') {
+      indexes = val.split(' ');
+    } else {
+      // Number
+      indexes = [val];
+    }
+
+    return space.sheets[`${alias}${indexes.join('')}`];
+  });
+
+  return [rest, styles];
 }

@@ -1,13 +1,17 @@
-# react-native-spacesheet
+# `react-native-spacesheet`
 
 Quick & consistent margin / padding. Spacesheeeeeeeeeeet…!
 
 <img src="spaceship.jpg" />
 
+## [DEPRECATED]
+
+Use [`react-native-themesheet`](https://github.com/eightyfive/react-native-themesheet) + [`react-native-col`](https://github.com/eightyfive/react-native-col) instead.
+
 ## Installation
 
 ```
-$ yarn add react-native-spacesheet
+yarn add react-native-spacesheet
 ```
 
 ## Usage
